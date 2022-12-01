@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using UserBase.DAL.Entities;
@@ -27,6 +28,7 @@ namespace UserBase.Pages.Account
     {
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserStore<User> _userStore;
         private readonly IUserEmailStore<User> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
@@ -35,12 +37,14 @@ namespace UserBase.Pages.Account
             UserManager<User> userManager,
             IUserStore<User> userStore,
             SignInManager<User> signInManager,
+            RoleManager<IdentityRole> roleManager,
             ILogger<RegisterModel> logger)
         {
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _logger = logger;
         }
 
@@ -116,11 +120,12 @@ namespace UserBase.Pages.Account
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
+                await AddRole(user);
+
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
                     return Redirect(returnUrl);
                 }
                 foreach (var error in result.Errors)
@@ -154,6 +159,25 @@ namespace UserBase.Pages.Account
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
             return (IUserEmailStore<User>)_userStore;
+        }
+
+        private async Task AddRole(User user)
+        {
+            await AddRolesToBD();
+            if (_userManager.Users.Count() > 1)
+                await _userManager.AddToRoleAsync(user, Enums.Roles.Basic.ToString());
+            else
+                await _userManager.AddToRoleAsync(user, Enums.Roles.Admin.ToString());
+        }
+
+        private async Task AddRolesToBD()
+        {
+            var roleExist = await _roleManager.RoleExistsAsync(Enums.Roles.Admin.ToString());
+            if (!roleExist)
+            {
+                await _roleManager.CreateAsync(new IdentityRole(Enums.Roles.Admin.ToString()));
+                await _roleManager.CreateAsync(new IdentityRole(Enums.Roles.Basic.ToString()));
+            }
         }
     }
 }

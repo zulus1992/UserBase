@@ -3,6 +3,7 @@ using System.Configuration;
 using UserBase.DAL;
 using Microsoft.AspNetCore.Identity;
 using UserBase.DAL.Entities;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<UsersContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<UsersContext>();
 
 builder.Services.AddRazorPages();
@@ -37,3 +39,4 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();
+

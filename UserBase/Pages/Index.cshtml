@@ -10,13 +10,19 @@
         @foreach (var item in Model.Users)
         {
             <tr>
-                <td>@item.Key</td>
+                <td>@item.UserName</td>
                 <td>
-                    @if (item.Value != null)
+                    @if (item.Image != null)
                     {
-                        <img src="data:image;base64,@System.Convert.ToBase64String(item.Value)" width="32" height="32" />
+                        <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" width="32" height="32" />
                     }
                 </td>
+                @if (User.IsInRole(Enums.Roles.Admin.ToString()))
+                {
+                    <td>
+                        <a asp-page="/Account/Delete" asp-route-userId="@item.Id">Delete</a>
+                    </td>
+                }
             </tr>
         }
     </table>
