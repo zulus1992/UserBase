@@ -10,7 +10,13 @@
         @foreach (var item in Model.Users)
         {
             <tr>
-                <td>@item</td>
+                <td>@item.Key</td>
+                <td>
+                    @if (item.Value != null)
+                    {
+                        <img src="data:image;base64,@System.Convert.ToBase64String(item.Value)" width="32" height="32" />
+                    }
+                </td>
             </tr>
         }
     </table>

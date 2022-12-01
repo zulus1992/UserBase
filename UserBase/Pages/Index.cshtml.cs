@@ -9,7 +9,7 @@ namespace UserBase.Pages
     {
         private readonly ILogger<IndexModel> _logger;
         private readonly UsersContext _context;
-        public List<string> Users { get; set; }
+        public Dictionary<string, byte[]?> Users { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, UsersContext context)
         {
@@ -20,8 +20,7 @@ namespace UserBase.Pages
         public void OnGet()
         {
             Users = _context.Users
-               .Select(x => x.UserName)
-               .ToList();
+               .ToDictionary(x =>x.UserName,x=>x.Image);
         }
     }
 }
