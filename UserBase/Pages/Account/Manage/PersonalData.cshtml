@@ -1,0 +1,38 @@
+﻿@page
+@model PersonalDataModel
+@{
+    ViewData["Title"] = "Personal Data";
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        @Model.Name
+        @if (Model.Image != null)
+        {
+            <img src="data:image;base64,@System.Convert.ToBase64String(Model.Image)" width="32" height="32" />
+        }
+        else
+        {
+            <p>Image not load</p>
+        }
+    </div>
+    <div class="col-md-6">
+        <p>
+            <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger">Delete User</a>
+        </p>
+        <p>
+            Change Image
+            <form method="post" enctype="multipart/form-data">
+                <input type="file" asp-for="Upload" />
+                <input type="submit" />
+            </form>
+        </p>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -5,6 +5,16 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h2>Пользователи</h2>
+    <table class="table">
+        @foreach (var item in Model.Users)
+        {
+            <tr>
+                <td>@item</td>
+            </tr>
+        }
+    </table>
+    <a asp-page="/Account/Register">Register</a>
+    <br />
+    <a asp-page="/Account/Login">Login</a>
 </div>

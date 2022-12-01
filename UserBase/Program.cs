@@ -1,6 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
+using UserBase.DAL;
+using Microsoft.AspNetCore.Identity;
+using UserBase.DAL.Entities;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContext<UsersContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddEntityFrameworkStores<UsersContext>();
+
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -17,6 +30,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();;
 
 app.UseAuthorization();
 
